@@ -10,13 +10,13 @@ License:
 */
 
 class SW_ButtonWidget extends WP_Widget {
-    
+
      /** constructor -- name this the same as the class above */
     function SW_ButtonWidget() {
-        parent::WP_Widget(false, $name = 'Push通知ボタン');    
+        parent::WP_Widget(false, $name = 'Push通知ボタン');
     }
     /** @see WP_Widget::widget -- do not rename this */
-    function widget($args, $instance) { 
+    function widget($args, $instance) {
         extract( $args );
         $title      = apply_filters('widget_title', $instance['title']);
         $message    = $instance['message'];
@@ -25,39 +25,79 @@ class SW_ButtonWidget extends WP_Widget {
                   <?php if ( $title )
                         echo $before_title . $title . $after_title; ?>
                             <div style="border:1px solid #aaa; height:200px">
-                            <ul>
-                                <li><?php echo $message; ?></li>
-                            </ul>
+                                <input type="button" class="subscribe_button" name="name" value="通知を受け取ります" disabled>
+                                <span class="subscribe_status"></span>
+                                <script>
+                                    window.addEventListener('load', function() {
+                                        navigator.serviceWorker.register('/service-worker.js')
+                                            .then(onRegiseter)
+                                            .catch(function(e) {
+                                                console.error(e);
+                                            });
+                                    });
+
+                                    function onRegiseter(sw) {
+                                        enableButton();
+                                    }
+
+                                    function enableButton() {
+                                        var button = document.querySelector('.subscribe_button');
+
+                                        button.addEventListener('click', function() {
+                                            navigator.serviceWorker.ready
+                                                .then(subscribe)
+                                                .then(function(sub) {
+                                                    console.log(sub.subscriptionId);
+                                                    fetch('./service_worker.php?token=' + sub.subscriptionId)
+                                                        .then(function(){
+                                                            document.querySelector('.subscribe_status').innerHTML = '購読完了';
+                                                        })
+                                                        .catch(function(e) {
+                                                            console.error(e);
+                                                        });
+
+                                                })
+                                                .catch(function(e) {
+                                                    console.error(e);
+                                                });
+                                        });
+                                        button.disabled = false;
+                                    }
+
+                                    function subscribe(sw) {
+                                        return sw.pushManager.subscribe();
+                                    }
+                                </script>
                             </div>
               <?php echo $after_widget; ?>
         <?php
     }
- 
+
     /** @see WP_Widget::update -- do not rename this */
-    function update($new_instance, $old_instance) {     
+    function update($new_instance, $old_instance) {
         $instance = $old_instance;
         $instance['title'] = strip_tags($new_instance['title']);
         $instance['message'] = strip_tags($new_instance['message']);
         return $instance;
     }
- 
+
     /** @see WP_Widget::form -- do not rename this */
-    function form($instance) {  
- 
+    function form($instance) {
+
         $title      = esc_attr($instance['title']);
         $message    = esc_attr($instance['message']);
         ?>
          <p>
-          <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label> 
+          <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
           <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
         </p>
         <p>
-          <label for="<?php echo $this->get_field_id('message'); ?>"><?php _e('Simple Message'); ?></label> 
+          <label for="<?php echo $this->get_field_id('message'); ?>"><?php _e('Simple Message'); ?></label>
           <input class="widefat" id="<?php echo $this->get_field_id('message'); ?>" name="<?php echo $this->get_field_name('message'); ?>" type="text" value="<?php echo $message; ?>" />
         </p>
-        <?php 
+        <?php
     }
- 
+
 
 
 }
