@@ -29,7 +29,7 @@ class SW_ButtonWidget extends WP_Widget {
                                 <span class="subscribe_status"></span>
                                 <script>
                                     window.addEventListener('load', function() {
-                                        navigator.serviceWorker.register('/service-worker.js')
+                                        navigator.serviceWorker.register('/sw/service-worker.js')
                                             .then(onRegiseter)
                                             .catch(function(e) {
                                                 console.error(e);
