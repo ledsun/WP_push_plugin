@@ -132,7 +132,6 @@ function send_gcm() {
     $myrows = $wpdb->get_results( "SELECT token_long FROM wp_tokens" );
     $registrations = "";
     foreach ($myrows as $row) {
-        var_dump($row);
         $registrations .= '\\"' . $row->token_long . '\\",';
     }
 
