@@ -1,9 +1,14 @@
 <?php
+/* Install this file to wp root */
+
+//FIXME:
+// * DB構造
+// * API PATH
 header("Content-Type: text/javascript; charset=utf-8");
 $token = $_GET["token"]; 
 include_once dirname(__FILE__) . "/wp-config.php";
 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-//!!! SQL Injection
+//FIXME: !!! SQL Injection
 $hash = md5($token);
 $query = "insert into wp_tokens(token, token_long) values ('{$hash}', '{$token}');";
 //echo $query;

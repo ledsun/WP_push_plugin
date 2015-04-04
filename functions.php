@@ -87,14 +87,21 @@ global $wpdb;
 // 接頭辞（wp_）を付けてテーブル名を設定
 $tablename = "wp_tokens";
 cmt_activate($tablename);
-
-function push_user($post_id) {
+function send_gcm() {
     global $wpdb;
-    $myrows = $wpdb->get_results( "SELECT token FROM wp_tokens" );
+    $myrows = $wpdb->get_results( "SELECT token_long FROM wp_tokens" );
+    $registrations = "";
     foreach ($myrows as $row) {
-        echo "{$row->token},";
+        var_dump($row);
+        $registrations .= '\\"' . $row->token_long . '\\",';
     }
-    die();
+
+    $cmd = 'curl --header "Authorization: key=AIzaSyA-uX-p3-PVjN_Te8OvJ55QfvHhGQH_-mE" --header Content-Type:"application/json" https://android.googleapis.com/gcm/send -d "{\"registration_ids\":[' . $registrations . '\"dummy\"]}"';
+    exec($cmd);
+}
+function push_user($post_id) {
+    send_gcm();
 };
+
 
 add_action("post_updated", "push_user");
