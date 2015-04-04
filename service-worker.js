@@ -19,44 +19,44 @@ self.addEventListener('notificationclick', function(event) {
   )
 });
 
-var urlsCache = [
-  '/'
-];
-
-self.oninstall = function(e) {
-  e.waitUntil(
-    caches.open('version')
-      .then(function(cache) {
-        console.log('Opend Cache');
-        return cache.addAll(urlsCache);
-      })
-  );
-};
-
-self.onfetch = function(e) {
-  e.respondWith(
-    caches.match(e.request)
-      .then(function(res) {
-        if (res) {
-          return res;
-        }
-
-        var fetchReq = event.request.clone();
-
-        return fetch(fetchReq)
-          .then(function(res) {
-            if (!res || res.status !== 200 || res.type !== 'basic') {
-              return res;
-            }
-
-            var resToCache = res.clone();
-            caches.open('version')
-              .then(function(cache) {
-                cache.put(e.request, resToCache);
-              });
-
-            return res;
-          });
-      })
-  );
-};
+// var urlsCache = [
+//   '/'
+// ];
+//
+// self.oninstall = function(e) {
+//   e.waitUntil(
+//     caches.open('version')
+//       .then(function(cache) {
+//         console.log('Opend Cache');
+//         return cache.addAll(urlsCache);
+//       })
+//   );
+// };
+//
+// self.onfetch = function(e) {
+//   e.respondWith(
+//     caches.match(e.request)
+//       .then(function(res) {
+//         if (res) {
+//           return res;
+//         }
+//
+//         var fetchReq = event.request.clone();
+//
+//         return fetch(fetchReq)
+//           .then(function(res) {
+//             if (!res || res.status !== 200 || res.type !== 'basic') {
+//               return res;
+//             }
+//
+//             var resToCache = res.clone();
+//             caches.open('version')
+//               .then(function(cache) {
+//                 cache.put(e.request, resToCache);
+//               });
+//
+//             return res;
+//           });
+//       })
+//   );
+// };
